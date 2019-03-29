@@ -1,0 +1,13 @@
+steps:
+- name: gcr.io/cloud-builders/git
+  args: ['clone', 'https://github.com/FireXStuff/firexbuilder.git']
+  dir: '$BUILD_ID'
+- name: gcr.io/$PROJECT_ID/firex-alpine-build
+  args: ['python3', 'firexbuilder/build.py', 'all', '--sudo', '--upload_pip', '--skip_htmlcov', '--skip_docs_build', '--skip_run_tests']
+  dir: '$BUILD_ID/firexbuilder'
+  secretEnv: ['TWINE_PASSWORD']
+
+secrets:
+- kmsKeyName: projects/firex-kit-documentation/locations/global/keyRings/secrets/cryptoKeys/TWINE_PASSWORD
+  secretEnv:
+    TWINE_PASSWORD: 'CiQAI+bsJfbKBVxA+tOJAGnHIJRG0zFyUbzjvBx3S0BSF0T3UdUSOgDnI0hgPR5iY1f1pYZJUaPASEjviB8mzBIlAEI0LSMy+r9FUOIKIPDTO4lQN8BWsq3ksNAhe8f5aKA='
