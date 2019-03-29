@@ -1,3 +1,5 @@
+# Build FireX Pip Packages, Run Tests, Generate Code Coverage, and Build Docs
+
 #!/usr/bin/env python
 
 from subprocess import check_call, check_output
