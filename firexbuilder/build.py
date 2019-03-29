@@ -80,7 +80,7 @@ def run_flow_tests(source, output_dir):
 def upload_coverage_to_codecov(source, output_dir, sudo=False):
     coverage_report = os.path.join(output_dir, '.coverage')
     if not os.path.exists(coverage_report):
-        print('No coverage report found in %s' % coverage_report)
+        print("No coverage report found in %s; can't run codecov" % coverage_report)
         return
     print('--> Copying .coverage into source directory')
     sudo_cmd = ['sudo'] if sudo else []
@@ -92,6 +92,10 @@ def upload_coverage_to_codecov(source, output_dir, sudo=False):
 
 
 def generate_htmlcov(source, output_dir, git_hash=None):
+    coverage_report = os.path.join(output_dir, '.coverage')
+    if not os.path.exists(coverage_report):
+        print("No coverage report found in %s; can't generate coverage html" % coverage_report)
+        return
     if not git_hash:
         git_hash, _, __ = get_git_hash_tags_and_files(source)
     print('--> Generate the coverage html')
