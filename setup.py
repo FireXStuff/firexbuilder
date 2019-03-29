@@ -12,4 +12,12 @@ setup(name='firexbuilder',
       license='BSD-3-Clause',
       packages=['firexbuilder', ],
       zip_safe=True,
+      classifiers=[
+          "Programming Language :: Python :: 3",
+          "Operating System :: OS Independent",
+          "License :: OSI Approved :: BSD License",
+      ],
+      entry_points={
+          'console_scripts': ['firex-build = firexbuilder.build:main']
+      },
       )
