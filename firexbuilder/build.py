@@ -43,17 +43,20 @@ def run_tests(source, output_dir):
     unit_cov_file = run_unit_tests(source, output_dir)
     flow_cov_file = run_flow_tests(source, output_dir)
 
-    if flow_cov_file and os.path.exists(flow_cov_file):
+    if unit_cov_file and flow_cov_file and os.path.exists(flow_cov_file):
         print('--> Merge coverage data')
         check_call(['coverage', 'combine', unit_cov_file, flow_cov_file], cwd=output_dir)
 
 
 def run_unit_tests(source, output_dir):
+    unit_test_dir = os.path.join(source, "tests", "unit_tests")
+    if not os.path.exists(unit_test_dir):
+        print('No unit tests found in %s' % unit_test_dir)
+        return None
     coverage_file = os.path.join(output_dir, '.coverage')
     env = os.environ.copy()
     env['COVERAGE_FILE'] = coverage_file
     print('--> Run unit-tests and coverage')
-    unit_test_dir = os.path.join(source, "tests", "unit_tests")
     check_call(['coverage', 'run', '-m', 'unittest', 'discover', '-s', unit_test_dir, '-p', '*_tests.py'],
                cwd=source, env=env)
 
@@ -62,11 +65,12 @@ def run_unit_tests(source, output_dir):
 
 
 def run_flow_tests(source, output_dir):
-    results_dir = os.path.join(output_dir, 'flow_test_results')
-    print('--> Run flow-tests and coverage')
     flow_test_dir = os.path.join(source, "tests", "integration_tests")
     if not os.path.exists(flow_test_dir):
+        print('No flow tests found in %s' % flow_test_dir)
         return None
+    results_dir = os.path.join(output_dir, 'flow_test_results')
+    print('--> Run flow-tests and coverage')
     check_call(['flow_tests', "--logs", results_dir, "--coverage", "--tests", flow_test_dir], cwd=source)
 
     # flow test coverage file is located in the results dir
@@ -74,9 +78,12 @@ def run_flow_tests(source, output_dir):
 
 
 def upload_coverage_to_codecov(source, output_dir, sudo=False):
+    coverage_report = os.path.join(output_dir, '.coverage')
+    if not os.path.exists(coverage_report):
+        print('No coverage report found in %s' % coverage_report)
+        return
     print('--> Copying .coverage into source directory')
     sudo_cmd = ['sudo'] if sudo else []
-    coverage_report = os.path.join(output_dir, '.coverage')
     cmd = sudo_cmd + ['cp', coverage_report, source]
     check_call(cmd)
 
@@ -99,6 +106,10 @@ def upload_pip_pkg_to_pypi(source, twine_username):
 
 
 def build_sphinx_docs(source, sudo=False):
+    docs_folder = os.path.join(source, 'docs')
+    if not os.path.exists(docs_folder):
+        print('No docs found in %s' % docs_folder)
+        return
     sudo_cmd = ['sudo'] if sudo else []
     print('--> Building the Docs')
     cmd = sudo_cmd + ['sphinx-build', '-b', 'html', 'docs', 'html']
