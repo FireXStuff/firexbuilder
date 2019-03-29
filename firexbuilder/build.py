@@ -106,14 +106,15 @@ def build_sphinx_docs(source, sudo=False):
 
 
 def run(source='.', skip_build=None, upload_pip=None, upload_pip_if_tag=None, twine_username=None, skip_htmlcov=None,
-        upload_codecov=None, skip_docs_build=None, sudo=False, output_dir='.'):
+        upload_codecov=None, skip_docs_build=None, sudo=False, output_dir='.', skip_run_tests=None):
 
     git_hash, git_tags, files = get_git_hash_tags_and_files(source)
 
     if not skip_build:
         build(source, sudo)
 
-    run_tests(source, output_dir)
+    if not skip_run_tests:
+        run_tests(source, output_dir)
 
     if not skip_htmlcov:
         generate_htmlcov(source, output_dir, git_hash)
@@ -137,6 +138,7 @@ def main():
     sub_parser = parser.add_subparsers()
     do_all = sub_parser.add_parser("all")
     do_all.add_argument('--skip_build', action='store_true')
+    do_all.add_argument('--skip_run_tests', action='store_true')
     do_all.add_argument('--upload_pip', action='store_true')
     do_all.add_argument('--upload_pip_if_tag', action='store_true')
     do_all.add_argument('--twine_username', default='firexdev')
