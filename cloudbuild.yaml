@@ -3,7 +3,7 @@ steps:
   args: ['clone', 'https://github.com/FireXStuff/firexbuilder.git']
   dir: '$BUILD_ID'
 - name: gcr.io/$PROJECT_ID/firex-alpine-build
-  args: ['python3', 'firexbuilder/build.py', 'all', '--sudo']
+  args: ['python3', 'firexbuilder/build.py', 'all', '--sudo', '--upload_pip_if_tag']
   dir: '$BUILD_ID/firexbuilder'
   secretEnv: ['TWINE_PASSWORD']
 
