@@ -17,7 +17,8 @@ setup(name='firexbuilder',
           "Operating System :: OS Independent",
           "License :: OSI Approved :: BSD License",
       ],
-      install_requires=["wheel",],
+      install_requires=["wheel", 
+                        "coverage"],
       entry_points={
           'console_scripts': ['firex-build = firexbuilder.build:main']
       },
