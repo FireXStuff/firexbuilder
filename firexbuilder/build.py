@@ -6,9 +6,9 @@ from subprocess import check_call, check_output
 import os
 
 
-def build(source, sudo=False):
+def build(source, sudo=False, install_test_reqs=False):
     sudo_cmd = ['sudo'] if sudo else []
-    print('--> Remove any old build or sdist folders')
+    print('--> Remove any old build or sdist  folders')
     for subfolder in ['build', 'dist']:
         folder = os.path.join(source, subfolder)
         if os.path.exists(folder):
@@ -25,6 +25,8 @@ def build(source, sudo=False):
 
     print('--> Install the wheel')
     cmd = sudo_cmd + ['pip3', 'install', wheel]
+    if install_test_reqs:
+        cmd += ['.[test]']
     check_call(cmd, cwd=source)
 
 
@@ -123,12 +125,13 @@ def build_sphinx_docs(source, sudo=False):
 
 
 def run(source='.', skip_build=None, upload_pip=None, upload_pip_if_tag=None, twine_username=None, skip_htmlcov=None,
-        upload_codecov=None, skip_docs_build=None, sudo=False, output_dir='.', skip_run_tests=None):
+        upload_codecov=None, skip_docs_build=None, sudo=False, output_dir='.', skip_run_tests=None,
+        install_test_reqs=False):
 
     git_hash, git_tags, files = get_git_hash_tags_and_files(source)
 
     if not skip_build:
-        build(source, sudo)
+        build(source, sudo, install_test_reqs)
 
     if not skip_run_tests:
         run_tests(source, output_dir)
@@ -164,6 +167,7 @@ def main():
     do_all.add_argument('--skip_docs_build', action='store_true')
     do_all.add_argument('--sudo', action='store_true')
     do_all.add_argument('--output_dir', default='.')
+    do_all.add_argument('--install_test_reqs', action='store_true')
     do_all.set_defaults(func=run)
 
     upload = sub_parser.add_parser("upload_pip")
