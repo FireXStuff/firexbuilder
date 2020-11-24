@@ -82,14 +82,15 @@ def run_flow_tests(source, output_dir):
 
 
 def upload_coverage_to_codecov(source, output_dir, sudo=False):
-    coverage_report = os.path.join(output_dir, '.coverage')
-    if not os.path.exists(coverage_report):
-        print("No coverage report found in %s; can't run codecov" % coverage_report)
-        return
-    print('--> Copying .coverage into source directory')
-    sudo_cmd = ['sudo'] if sudo else []
-    cmd = sudo_cmd + ['cp', coverage_report, source]
-    check_call(cmd)
+    if source != output_dir:
+        coverage_report = os.path.join(output_dir, '.coverage')
+        if not os.path.exists(coverage_report):
+            print("No coverage report found in %s; can't run codecov" % coverage_report)
+            return
+        print('--> Copying .coverage into source directory')
+        sudo_cmd = ['sudo'] if sudo else []
+        cmd = sudo_cmd + ['cp', coverage_report, source]
+        check_call(cmd)
 
     print('--> Uploading coverage report to codecov')
     check_call(sudo_cmd + ['codecov'], cwd=source)
