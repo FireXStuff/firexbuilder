@@ -108,9 +108,9 @@ def generate_htmlcov(source, output_dir, git_hash=None):
     print('View Coverage at: %s' % os.path.abspath(os.path.os.path.join(output_dir, 'htmlcov/index.html')))
 
 
-def upload_pip_pkg_to_pypi(source):
+def upload_pip_pkg_to_pypi(source, twine_username):
     print('--> Uploading pip package')
-    cmd = ['twine', 'upload', 'dist/*']
+    cmd = ['twine', 'upload', '--verbose', '--username', twine_username, 'dist/*']
     check_call(cmd, cwd=source)
 
 
@@ -125,7 +125,7 @@ def build_sphinx_docs(source, sudo=False):
     check_call(cmd, cwd=source)
 
 
-def run(source='.', skip_build=None, upload_pip=None, upload_pip_if_tag=None, skip_htmlcov=None,
+def run(source='.', skip_build=None, upload_pip=None, upload_pip_if_tag=None, twine_username=None, skip_htmlcov=None,
         upload_codecov=None, skip_docs_build=None, sudo=False, output_dir='.', skip_run_tests=None,
         install_test_reqs=False):
 
@@ -144,7 +144,7 @@ def run(source='.', skip_build=None, upload_pip=None, upload_pip_if_tag=None, sk
         upload_coverage_to_codecov(source, output_dir, sudo)
 
     if upload_pip or (upload_pip_if_tag and git_tags):
-        upload_pip_pkg_to_pypi(source)
+        upload_pip_pkg_to_pypi(source, twine_username)
 
     if not skip_docs_build:
         build_sphinx_docs(source, sudo)
@@ -162,6 +162,7 @@ def main():
     do_all.add_argument('--skip_run_tests', action='store_true')
     do_all.add_argument('--upload_pip', action='store_true')
     do_all.add_argument('--upload_pip_if_tag', action='store_true')
+    do_all.add_argument('--twine_username', default='firexdev')
     do_all.add_argument('--skip_htmlcov', action='store_true')
     do_all.add_argument('--upload_codecov', action='store_true')
     do_all.add_argument('--skip_docs_build', action='store_true')
@@ -171,6 +172,7 @@ def main():
     do_all.set_defaults(func=run)
 
     upload = sub_parser.add_parser("upload_pip")
+    upload.add_argument('--twine_username', default='firexdev')
     upload.set_defaults(func=upload_pip_pkg_to_pypi)
 
     output_dir_parser = argparse.ArgumentParser(add_help=False)
