@@ -18,6 +18,7 @@ setup(name='firexbuilder',
           "License :: OSI Approved :: BSD License",
       ],
       install_requires=["wheel", 
+			"eventlet",
                         "coverage==4.5.4"],
       entry_points={
           'console_scripts': ['firex-build = firexbuilder.build:main']
