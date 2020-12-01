@@ -168,7 +168,7 @@ def main():
     do_all.add_argument('--skip_docs_build', action='store_true')
     do_all.add_argument('--sudo', action='store_true')
     do_all.add_argument('--output_dir', default='.')
-    do_all.add_argument('--install_test_reqs', action='store_true')
+    do_all.add_argument('--install_test_reqs', action='store_true')              
     do_all.set_defaults(func=run)
 
     upload = sub_parser.add_parser("upload_pip")
@@ -181,13 +181,16 @@ def main():
     sudo_parser = argparse.ArgumentParser(add_help=False)
     sudo_parser.add_argument('--sudo', action='store_true')
 
+    build_parser = sub_parser.add_parser("build", parents=[sudo_parser])               
+    build_parser.add_argument('--install_test_reqs', action='store_true')              
+    build_parser.set_defaults(func=build)  
+
     output_functions = {
         "tests": (run_tests, output_dir_parser),
         "unit_tests": (run_unit_tests, output_dir_parser),
         "integration_tests": (run_flow_tests, output_dir_parser),
         "cov_report": (generate_htmlcov, output_dir_parser),
         "upload_codecov": (upload_coverage_to_codecov, output_dir_parser, sudo_parser),
-        "build": (build, sudo_parser),
         "docs": (build_sphinx_docs, sudo_parser),
     }
     for name, data in output_functions.items():
