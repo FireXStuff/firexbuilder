@@ -24,7 +24,7 @@ def build(source, sudo=False, install_test_reqs=False):
     wheel = os.path.join('dist', wheels[0])
 
     print('--> Install the wheel')
-    cmd = sudo_cmd + ['pip3', 'install', wheel]
+    cmd = sudo_cmd + ['pip3', 'install', '--upgrade', '--force-reinstall', wheel]
     if install_test_reqs:
         cmd += ['.[test]']
     check_call(cmd, cwd=source)
