@@ -22,11 +22,12 @@ def build(source, sudo=False, install_test_reqs=False):
     wheels = [w for w in os.listdir(os.path.join(source, 'dist')) if w.endswith('whl')]
     assert len(wheels) == 1
     wheel = os.path.join('dist', wheels[0])
-
-    print('--> Install the wheel')
-    cmd = sudo_cmd + ['pip3', 'install', '--upgrade', '--force-reinstall', wheel]
+    
     if install_test_reqs:
-        cmd += ['.[test]']
+        wheel += '.[test]'
+
+    print(f'--> Install the wheel ({wheel})')
+    cmd = sudo_cmd + ['pip3', 'install', '--upgrade', '--force-reinstall', wheel]
     check_call(cmd, cwd=source)
 
 
