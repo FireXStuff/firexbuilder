@@ -6,7 +6,7 @@ from subprocess import check_call, check_output
 import os
 
 
-def build(source, sudo=False, install_test_reqs=False):
+def build(source, sudo=False, install_test_reqs=False, install_flame=False):
     sudo_cmd = ['sudo'] if sudo else []
     print('--> Remove any old build or sdist  folders')
     for subfolder in ['build', 'dist']:
@@ -22,9 +22,14 @@ def build(source, sudo=False, install_test_reqs=False):
     wheels = [w for w in os.listdir(os.path.join(source, 'dist')) if w.endswith('whl')]
     assert len(wheels) == 1
     wheel = os.path.join('dist', wheels[0])
-    
+   
+    bundles = []
     if install_test_reqs:
-        wheel += '[test]'
+        bundles.append('test')
+    if install_flame:
+        bundles.append('flame')
+    if bundles:
+        wheel += '[%s]' % ','.join(bundles)
 
     print(f'--> Install the wheel ({wheel})')
     cmd = sudo_cmd + ['pip3', 'install', '--upgrade', '--force-reinstall', wheel]
@@ -128,12 +133,12 @@ def build_sphinx_docs(source, sudo=False):
 
 def run(source='.', skip_build=None, upload_pip=None, upload_pip_if_tag=None, twine_username=None, skip_htmlcov=None,
         upload_codecov=None, skip_docs_build=None, sudo=False, output_dir='.', skip_run_tests=None,
-        install_test_reqs=False):
+        install_test_reqs=False, install_flame=False):
 
     git_hash, git_tags, files = get_git_hash_tags_and_files(source)
 
     if not skip_build:
-        build(source, sudo, install_test_reqs)
+        build(source, sudo, install_test_reqs, install_flame)
 
     if not skip_run_tests:
         run_tests(source, output_dir)
@@ -170,6 +175,7 @@ def main():
     do_all.add_argument('--sudo', action='store_true')
     do_all.add_argument('--output_dir', default='.')
     do_all.add_argument('--install_test_reqs', action='store_true')              
+    do_all.add_argument('--install_flame', action='store_true')              
     do_all.set_defaults(func=run)
 
     upload = sub_parser.add_parser("upload_pip")
@@ -184,6 +190,7 @@ def main():
 
     build_parser = sub_parser.add_parser("build", parents=[sudo_parser])               
     build_parser.add_argument('--install_test_reqs', action='store_true')              
+    build_parser.add_argument('--install_flame', action='store_true')              
     build_parser.set_defaults(func=build)  
 
     output_functions = {
