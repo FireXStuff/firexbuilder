@@ -18,7 +18,7 @@ build:
     - source venv/bin/activate
     - pip install --upgrade pip
   script:
-    - firexbuilder/build.py build
+    - python firexbuilder/build.py build
   artifacts:
     paths:
       - dist/
