@@ -5,20 +5,21 @@ cache:
   paths:
     - .cache/pip
     - venv/
-
+    
 stages:
   - build
   - upload
 
-build:
-  stage: build
-  image: firexstuff/firex-alpine-build:latest
+default:
   before_script:
     - python -m venv venv
     - source venv/bin/activate
     - pip install --upgrade pip
-    - pip install wheel
+    
+build:
+  stage: build
   script:
+    - pip install wheel
     - python firexbuilder/build.py build
   artifacts:
     paths:
