@@ -24,7 +24,8 @@ setup(name='firexbuilder',
                         "coverage==4.5.4",
 			"codecov",
 			"sphinx",
-			"sphinx_rtd_theme"],
+			"sphinx_rtd_theme",
+		        "sphinx-sitemap"],
       entry_points={
           'console_scripts': ['firex-build = firexbuilder.build:main']
       },
