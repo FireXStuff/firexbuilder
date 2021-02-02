@@ -29,4 +29,4 @@ setup(name='firexbuilder',
       entry_points={
           'console_scripts': ['firex-build = firexbuilder.build:main']
       },
-      )
+   )
