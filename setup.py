@@ -20,7 +20,6 @@ setup(name='firexbuilder',
       install_requires=["wheel",
 			"setuptools",
 			"twine",
-                        "importlib-metadata==1.6.0", # This is only added because twine will install a newer version incompatible with firex-flame
 			"eventlet",
                         "coverage==4.5.4",
 			"codecov",
