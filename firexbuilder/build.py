@@ -6,7 +6,7 @@ from subprocess import check_call, check_output
 import os
 
 
-def build(source, sudo=False, install_test_reqs=False, install_flame=False):
+def build(source, sudo=False, install_test_reqs=False, install_flame=False, force_reinstall=True):
     sudo_cmd = ['sudo'] if sudo else []
     print('--> Remove any old build or sdist  folders')
     for subfolder in ['build', 'dist']:
@@ -22,7 +22,7 @@ def build(source, sudo=False, install_test_reqs=False, install_flame=False):
     wheels = [w for w in os.listdir(os.path.join(source, 'dist')) if w.endswith('whl')]
     assert len(wheels) == 1
     wheel = os.path.join('dist', wheels[0])
-   
+
     bundles = []
     if install_test_reqs:
         bundles.append('test')
@@ -32,7 +32,10 @@ def build(source, sudo=False, install_test_reqs=False, install_flame=False):
         wheel += '[%s]' % ','.join(bundles)
 
     print(f'--> Install the wheel ({wheel})')
-    cmd = sudo_cmd + ['pip3', 'install', '--upgrade', '--force-reinstall', wheel]
+    cmd = sudo_cmd + ['pip3', 'install', '--upgrade']
+    if force_reinstall:
+        cmd += ['--force-reinstall']
+    cmd += [wheel]
     check_call(cmd, cwd=source)
 
 
@@ -174,8 +177,8 @@ def main():
     do_all.add_argument('--skip_docs_build', action='store_true')
     do_all.add_argument('--sudo', action='store_true')
     do_all.add_argument('--output_dir', default='.')
-    do_all.add_argument('--install_test_reqs', action='store_true')              
-    do_all.add_argument('--install_flame', action='store_true')              
+    do_all.add_argument('--install_test_reqs', action='store_true')
+    do_all.add_argument('--install_flame', action='store_true')
     do_all.set_defaults(func=run)
 
     upload = sub_parser.add_parser("upload_pip")
@@ -188,10 +191,10 @@ def main():
     sudo_parser = argparse.ArgumentParser(add_help=False)
     sudo_parser.add_argument('--sudo', action='store_true')
 
-    build_parser = sub_parser.add_parser("build", parents=[sudo_parser])               
-    build_parser.add_argument('--install_test_reqs', action='store_true')              
-    build_parser.add_argument('--install_flame', action='store_true')              
-    build_parser.set_defaults(func=build)  
+    build_parser = sub_parser.add_parser("build", parents=[sudo_parser])
+    build_parser.add_argument('--install_test_reqs', action='store_true')
+    build_parser.add_argument('--install_flame', action='store_true')
+    build_parser.set_defaults(func=build)
 
     output_functions = {
         "tests": (run_tests, output_dir_parser),
