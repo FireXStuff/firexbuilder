@@ -171,7 +171,6 @@ def main():
     do_all.add_argument('--skip_run_tests', action='store_true')
     do_all.add_argument('--upload_pip', action='store_true')
     do_all.add_argument('--upload_pip_if_tag', action='store_true')
-    do_all.add_argument('--twine_username', default='firexdev')
     do_all.add_argument('--skip_htmlcov', action='store_true')
     do_all.add_argument('--upload_codecov', action='store_true')
     do_all.add_argument('--skip_docs_build', action='store_true')
@@ -182,7 +181,7 @@ def main():
     do_all.set_defaults(func=run)
 
     upload = sub_parser.add_parser("upload_pip")
-    upload.add_argument('--twine_username', default='firexdev')
+    upload.add_argument('--twine_username', default='__token__')
     upload.set_defaults(func=upload_pip_pkg_to_pypi)
 
     output_dir_parser = argparse.ArgumentParser(add_help=False)
