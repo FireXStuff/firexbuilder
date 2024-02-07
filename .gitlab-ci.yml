@@ -21,6 +21,7 @@ build:
   stage: build
   script:
     - pip install wheel
+    - pip install setuptools
     - python firexbuilder/build.py build
   artifacts:
     paths:
